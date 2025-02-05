@@ -10,12 +10,20 @@ name: Docker images
 jobs:
   build-images:
     name: Build & push Docker images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{ matrix.config.run-version }}
     permissions:
       packages: write
 
     strategy:
       matrix:
+        config:
+          - arch: x86_64
+            run-version: 24.04
+            platform: linux/amd64
+          - arch: aarch64
+            run-version: 24.04-arm
+            platform: linux/arm/v8
+
         runtime:
           - name: freedesktop-23.08
             packages: org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
@@ -107,3 +115,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/flathub-infra/flatpak-github-actions:${{ matrix.runtime.name }}
+          platforms: ${{ matrix.config.platform }}
